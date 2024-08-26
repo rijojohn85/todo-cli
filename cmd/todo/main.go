@@ -27,7 +27,7 @@ func main() {
 		todos.Add(*add)
 		store(*todos)
 	case *complete > 0:
-		err := todos.Complete(*complete)
+		err := todos.Toggle(*complete)
 		if err != nil {
 			print_error(err, 1)
 		}

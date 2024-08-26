@@ -26,30 +26,32 @@ func (t *Todos) Add(task string) {
 	*t = append(*t, todo)
 }
 
-func (t *Todos) Complete(index int) error {
-	var err error = nil
+func (t *Todos) Toggle(index int) error {
 	ls := *t
-	if index <= 0 || index > len(ls) {
-		err = errors.New("invalid index")
+	err := ls.validateIndex(index)
+	if err != nil {
 		return err
 	}
 	ls[index-1].CompletedAt = time.Now()
-	ls[index-1].Done = true
-	return err
+	ls[index-1].Done = !ls[index-1].Done
+	return nil
 }
 
-func (t *Todos) Delete(index int) error {
+func (t *Todos) validateIndex(index int) error {
 	ls := *t
 	// new_t := make(Todos, len(ls)-1)
 	if index <= 0 || index > len(ls) {
 		return errors.New("invalid index")
 	}
-	// for i, todo := range ls {
-	// 	if i == index-1 {
-	// 		continue
-	// 	}
-	// 	new_t = append(new_t, todo)
-	// }
+	return nil
+}
+
+func (t *Todos) Delete(index int) error {
+	ls := *t
+	err := ls.validateIndex(index)
+	if err != nil {
+		return err
+	}
 	*t = append(ls[:index-1], ls[index:]...)
 	return nil
 }
