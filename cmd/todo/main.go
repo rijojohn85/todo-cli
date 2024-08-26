@@ -23,7 +23,7 @@ func main() {
 	}
 
 	switch {
-	case len(*add) > 1:
+	case len(*add) > 0:
 		todos.Add(*add)
 		store(*todos)
 	case *complete > 0:
