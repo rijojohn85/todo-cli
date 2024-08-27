@@ -5,6 +5,7 @@ import (
 	"errors"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/fatih/color"
@@ -110,4 +111,24 @@ func (t *Todos) Print() {
 	}
 
 	tbl.Print()
+}
+
+func (t *Todos) Edit(input string) error {
+	ls := *t
+	parts := strings.SplitN(input, ":", 2)
+
+	if len(parts) != 2 {
+		return errors.New("invalid format. please enter id:new_task")
+	}
+	index, con_err := strconv.Atoi(parts[0])
+	if con_err != nil {
+		return errors.New("invalid format. please enter id:new_task")
+	}
+
+	err := ls.validateIndex(index)
+	if err != nil {
+		return err
+	}
+	ls[index-1].Task = parts[1]
+	return nil
 }

@@ -13,6 +13,7 @@ const todoFile = "todos.json"
 
 func main() {
 	add := flag.String("add", "", "add a new todo")
+	edit := flag.String("edit", "", "edit task: format: index:new_task")
 	complete := flag.Int("complete", 0, "mark a string as completed")
 	del := flag.Int("delete", 0, "delete a task")
 	print := flag.Bool("print", false, "print the tasks")
@@ -35,6 +36,12 @@ func main() {
 		store(*todos)
 	case *del > 0:
 		err := todos.Delete(*del)
+		if err != nil {
+			print_error(err, 1)
+		}
+		store(*todos)
+	case (len(*edit) > 0):
+		err := todos.Edit(*edit)
 		if err != nil {
 			print_error(err, 1)
 		}

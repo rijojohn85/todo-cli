@@ -120,3 +120,70 @@ func TestComplete(t *testing.T) {
 		deleteFile()
 	})
 }
+
+func TestEdit(t *testing.T) {
+	t.Helper()
+	t.Run("expect error: wrong index", func(t *testing.T) {
+		task := "rijo john"
+		todos := &Todos{}
+		todos.Add(task)
+		err := todos.Edit("2:hello")
+		if err == nil {
+			deleteFile()
+			t.Fatal("Expcted error, did not get one")
+		} else {
+			if err.Error() != "invalid index" {
+				t.Errorf("Expected %q, got %q", "invalid index", err.Error())
+			}
+		}
+		deleteFile()
+	})
+	t.Run("expect error: wrong format", func(t *testing.T) {
+		task := "rijo john"
+		todos := &Todos{}
+		todos.Add(task)
+		err := todos.Edit("2-hello")
+		if err == nil {
+			deleteFile()
+			t.Fatal("Expcted error, did not get one")
+		} else {
+			if err.Error() != "invalid format. please enter id:new_task" {
+				t.Errorf("Expected %q, got %q", "invalid index", err.Error())
+			}
+		}
+		deleteFile()
+	})
+	t.Run("expect error: wrong format2", func(t *testing.T) {
+		task := "rijo john"
+		todos := &Todos{}
+		todos.Add(task)
+		err := todos.Edit("hello:2")
+		if err == nil {
+			deleteFile()
+			t.Fatal("Expcted error, did not get one")
+		} else {
+			if err.Error() != "invalid format. please enter id:new_task" {
+				t.Errorf("Expected %q, got %q", "invalid index", err.Error())
+			}
+		}
+		deleteFile()
+	})
+	t.Run("edit: working", func(t *testing.T) {
+		task := "rijo john"
+		todos := &Todos{}
+		todos.Add(task)
+		err := todos.Edit("1:hello")
+		if err != nil {
+			deleteFile()
+			t.Fatal(err)
+		}
+		todos.Store(filename)
+
+		ls := *todos
+		ls.Load(filename)
+		if ls[0].Task != "hello" {
+			t.Errorf("expected %q got %q", "hello", ls[0].Task)
+		}
+		deleteFile()
+	})
+}
