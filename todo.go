@@ -4,7 +4,11 @@ import (
 	"encoding/json"
 	"errors"
 	"os"
+	"strconv"
 	"time"
+
+	"github.com/fatih/color"
+	"github.com/rodaine/table"
 )
 
 type item struct {
@@ -32,8 +36,13 @@ func (t *Todos) Toggle(index int) error {
 	if err != nil {
 		return err
 	}
-	ls[index-1].CompletedAt = time.Now()
-	ls[index-1].Done = !ls[index-1].Done
+	if !ls[index-1].Done {
+		ls[index-1].Done = true
+		ls[index-1].CompletedAt = time.Now()
+	} else {
+		ls[index-1].Done = false
+		ls[index-1].CompletedAt = time.Time{}
+	}
 	return nil
 }
 
@@ -81,4 +90,24 @@ func (t *Todos) Store(filename string) error {
 	}
 
 	return os.WriteFile(filename, data, 0644)
+}
+
+func (t *Todos) Print() {
+	headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
+	colFmt := color.New(color.FgYellow).SprintfFunc()
+	tbl := table.New("#", "Task", "Done", "Created At", "Completed At")
+	tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(colFmt)
+
+	for i, t := range *t {
+		completed := "❌"
+		completedAt := "-"
+
+		if t.Done {
+			completed = "✅"
+			completedAt = t.CompletedAt.Format(time.RFC850)
+		}
+		tbl.AddRow(strconv.Itoa(i+1), t.Task, completed, t.CreatedAt.Format(time.RFC850), completedAt)
+	}
+
+	tbl.Print()
 }

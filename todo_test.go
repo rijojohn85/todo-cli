@@ -86,3 +86,37 @@ func TestDelete(t *testing.T) {
 		deleteFile()
 	})
 }
+
+func TestComplete(t *testing.T) {
+	t.Helper()
+	t.Run("expect error: complete", func(t *testing.T) {
+		task := "rijo john"
+		todos := &Todos{}
+		todos.Add(task)
+		err := todos.Toggle(2)
+		if err == nil {
+			deleteFile()
+			t.Fatal("Expcted error, did not get one")
+		} else {
+			if err.Error() != "invalid index" {
+				t.Errorf("Expected %q, got %q", "invalid index", err.Error())
+			}
+		}
+		deleteFile()
+	})
+	t.Run("complete task", func(t *testing.T) {
+		task := "rijo john"
+		todos := &Todos{}
+		todos.Add(task)
+		err := todos.Toggle(1)
+		if err != nil {
+			deleteFile()
+			t.Fatal(err)
+		}
+		ls := *todos
+		if !ls[0].Done {
+			t.Error("Task has not been marked complete")
+		}
+		deleteFile()
+	})
+}

@@ -15,6 +15,7 @@ func main() {
 	add := flag.String("add", "", "add a new todo")
 	complete := flag.Int("complete", 0, "mark a string as completed")
 	del := flag.Int("delete", 0, "delete a task")
+	print := flag.Bool("print", false, "print the tasks")
 	flag.Parse()
 	todos := &todo.Todos{}
 	if err := todos.Load(todoFile); err != nil {
@@ -38,6 +39,10 @@ func main() {
 			print_error(err, 1)
 		}
 		store(*todos)
+	case *print:
+		if *print {
+			todos.Print()
+		}
 	default:
 		print_error(errors.New("invalid option"), 1)
 	}
